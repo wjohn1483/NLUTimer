@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var time = ""
+    
     var body: some View {
-        Text("Hello, World!")
+        TextField("1h3m, @5pm", text: $time)
+            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.blue, lineWidth: 1))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
