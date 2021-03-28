@@ -12,14 +12,16 @@ import SwiftUI
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     static var popoverWidth = 200
-    static var popoverHeight = 100
+    static var popoverHeight = 50
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
+    var contentView: ContentView!
     
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Create the SwiftUI view that provides the window contents.
         let contentView = ContentView()
+        self.contentView = contentView
         
         let viewController = NSHostingController(rootView: contentView)
 
@@ -28,6 +30,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover.contentSize = NSSize(width: AppDelegate.popoverWidth, height: AppDelegate.popoverHeight)
         popover.behavior = .transient
         popover.contentViewController = viewController
+        popover.animates = false
         self.popover = popover
         
         // Create the status item
@@ -38,10 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         // Show popover at start
-        /*
-        let button = self.statusBarItem.button
-        self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
-        */
+        self.togglePopover(popover)
 
     }
     
