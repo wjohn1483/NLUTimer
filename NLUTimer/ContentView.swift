@@ -10,18 +10,24 @@ import SwiftUI
 struct ContentView: View {
     
     @State private var time = ""
+    @State private var typing = false
     @State private var buttonWidth = CGFloat(50.0)
     @State private var buttonHeight = CGFloat(50.0)
+    var nlutimer: NLUTimer!
     
     var body: some View {
-        TextField("1h3m, @5pm", text: $time)
+        TextField("1h3m, @5pm", text: $time, onEditingChanged: {
+            self.typing = $0
+        }, onCommit: {
+            self.nlutimer.onCommit(text: self.time)
+        })
             .font(Font.custom("Arial", size: 20))
             .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.blue, lineWidth: 1))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         
         HStack{
             Button(action: {
-                toggleTimer()
+                self.nlutimer.dummyFunction()
             }) {
                 Image("Play")
                     .renderingMode(.template)
@@ -43,7 +49,11 @@ struct ContentView: View {
                     .renderingMode(.template)
             }
             .frame(maxWidth: buttonWidth, maxHeight: buttonHeight, alignment: .bottomTrailing)
-            }
+        }
+    }
+    
+    init(nlutimer: NLUTimer){
+        self.nlutimer = nlutimer
     }
     
     func toggleTimer() {
@@ -56,12 +66,13 @@ struct ContentView: View {
     
     func quitProgram() {
         print("Quit program QQ")
+        NSApplication.shared.terminate(self)
     }
 }
 
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
