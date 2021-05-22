@@ -16,7 +16,7 @@ struct ContentView: View {
     var nlutimer: NLUTimer!
     
     var body: some View {
-        TextField("1h3m, @5pm", text: $time, onEditingChanged: {
+        TextField("1h3m, 300s", text: $time, onEditingChanged: {
             self.typing = $0
         }, onCommit: {
             self.nlutimer.onCommit(text: self.time)
@@ -27,7 +27,7 @@ struct ContentView: View {
         
         HStack{
             Button(action: {
-                self.nlutimer.dummyFunction()
+                self.nlutimer.toggleTimer()
             }) {
                 Image("Play")
                     .renderingMode(.template)
@@ -35,7 +35,7 @@ struct ContentView: View {
             .frame(maxWidth: buttonWidth, maxHeight: buttonHeight, alignment: .bottomLeading)
         
             Button(action: {
-                stopTimer()
+                self.nlutimer.stopTimer()
             }) {
                 Image("Stop")
                     .renderingMode(.template)
@@ -55,15 +55,7 @@ struct ContentView: View {
     init(nlutimer: NLUTimer){
         self.nlutimer = nlutimer
     }
-    
-    func toggleTimer() {
-        print("Toggle timer...")
-    }
-    
-    func stopTimer() {
-        print("Stop timer!")
-    }
-    
+     
     func quitProgram() {
         print("Quit program QQ")
         NSApplication.shared.terminate(self)

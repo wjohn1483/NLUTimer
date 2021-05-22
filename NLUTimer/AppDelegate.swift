@@ -7,6 +7,7 @@
 
 import Cocoa
 import SwiftUI
+import AVFoundation
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -16,12 +17,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
     var contentView: ContentView!
+    var nlutimer = NLUTimer()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        let nlutimer = NLUTimer()
+        self.nlutimer = NLUTimer()
 
         // Create the SwiftUI view that provides the window contents.
-        let contentView = ContentView(nlutimer: nlutimer)
+        let contentView = ContentView(nlutimer: self.nlutimer)
         self.contentView = contentView
         
         let viewController = NSHostingController(rootView: contentView)
@@ -41,8 +43,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             button.action = #selector(togglePopover(_:))
         }
         
-        nlutimer.setStatusBarItem(statusBarItem: self.statusBarItem)
-        nlutimer.setPopover(popover: self.popover)
+        // Pass object to let nlutimer take control
+        self.nlutimer.setStatusBarItem(statusBarItem: self.statusBarItem)
+        self.nlutimer.setPopover(popover: self.popover)
+        
         // Show popover at start
         self.togglePopover(popover)
 
@@ -56,6 +60,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
                 self.popover.contentViewController?.view.window?.becomeKey()
+                self.nlutimer.audioPlayer.stop()
             }
         }
     }
@@ -66,19 +71,106 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 class NLUTimer {
-    var time = ""
+    var time = 0
+    var timerRunning = false
+    var soundPath = "mixkit-musical-alert-notification-2309"
+    var soundType = "wav"
+    var audioPlayDefaultCount = 5 // Will play music 6 times
     var statusBarItem: NSStatusItem!
     var popover: NSPopover!
-
+    var timer: Timer?
+    var audioPlayer = AVAudioPlayer()
+    
+    init() {
+        let bundle = Bundle.main
+        guard let sound = bundle.path(forResource: self.soundPath, ofType: self.soundType) else { return }
+        do {
+            print("Found sound file")
+            self.audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: sound))
+        } catch {
+            print("Sound file not found")
+        }
+    }
+    
     func onCommit(text: String) {
         print("User input: " + text)
-        self.time = text
+        self.time = self.convert_time_string_to_seconds(time: text)
         self.setTimeToStatusBar()
         self.togglePopover()
+        if self.time != 0 {
+            self.createTimer()
+        }
+    }
+    
+    func createTimer() {
+        self.invalidateTimer()
+        self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { timer in
+            self.update()
+        })
+        self.timerRunning = true
+    }
+    
+    func invalidateTimer() {
+        self.timer?.invalidate()
+        self.timerRunning = false
+    }
+    
+    func convert_time_string_to_seconds(time: String) -> Int {
+        let hours = self.splitTimeByKeyword(time: time, keyword: "h")
+        let minutes = self.splitTimeByKeyword(time: time, keyword: "m")
+        let seconds = self.splitTimeByKeyword(time: time, keyword: "s")
+        return hours*3600 + minutes*60 + seconds
+    }
+    
+    func splitTimeByKeyword(time: String, keyword: String) -> Int {
+        if time.contains(keyword) {
+            let targetString: String = time.components(separatedBy: keyword)[0].trimmingCharacters(in: .whitespacesAndNewlines)
+            return Int(targetString) ?? 0
+        }
+        return 0
+    }
+    
+    func convert_seconds_to_string() -> String {
+        let seconds = self.time % 60
+        let minutes = (self.time-seconds) / 60 % 60
+        let hours = (self.time-seconds-60*minutes) / 3600
+        if hours != 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        }
+        else {
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
+    }
+    
+    func update() {
+        self.time -= 1
+        print("Remaining Time = " + String(self.time))
+        self.setTimeToStatusBar()
+        if self.time == 0 {
+            print("Time's up !!!!!")
+            self.invalidateTimer()
+            self.showNotification()
+            self.playMusic()
+        }
+    }
+    
+    func playMusic() {
+        self.audioPlayer.numberOfLoops = self.audioPlayDefaultCount
+        self.audioPlayer.currentTime = 0
+        self.audioPlayer.play()
+    }
+    
+    func showNotification() {
+        let notification = NSUserNotification()
+        notification.title = "Time's Up !!!"
+        notification.informativeText = ""
+        notification.soundName = NSUserNotificationDefaultSoundName
+        NSUserNotificationCenter.default.deliver(notification)
+        // TODO: Stop music while notification is closed
     }
     
     func setTimeToStatusBar(){
-        if self.time == "" {
+        if self.time == 0 {
             if let button = self.statusBarItem.button {
                 button.image = NSImage(named: "Icon")
                 button.title = ""
@@ -87,13 +179,29 @@ class NLUTimer {
         else {
             if let button = self.statusBarItem.button {
                 button.image = NSImage()
-                button.title = self.time
+                button.title = self.convert_seconds_to_string()
             }
         }
     }
     
-    func dummyFunction() {
-        print("Dummy")
+    func toggleTimer() {
+        if self.timerRunning == true {
+            print("Pause")
+            self.invalidateTimer()
+        }
+        else {
+            print("Continue")
+            if self.time != 0 {
+                self.createTimer()
+            }
+        }
+    }
+    
+    func stopTimer() {
+        print("Stop")
+        self.invalidateTimer()
+        self.time = 0
+        self.setTimeToStatusBar()
     }
     
     func setStatusBarItem(statusBarItem: NSStatusItem){

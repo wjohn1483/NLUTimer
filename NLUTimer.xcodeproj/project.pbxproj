@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D106A76B26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav in Resources */ = {isa = PBXBuildFile; fileRef = D106A76A26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav */; };
 		D15C7958260A127B005509ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C7957260A127B005509ED /* AppDelegate.swift */; };
 		D15C795A260A127B005509ED /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C7959260A127B005509ED /* ContentView.swift */; };
 		D15C795C260A127C005509ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D15C795B260A127C005509ED /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D106A76A26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "mixkit-musical-alert-notification-2309.wav"; sourceTree = "<group>"; };
 		D15C7954260A127B005509ED /* NLUTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NLUTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D15C7957260A127B005509ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D15C7959260A127B005509ED /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -61,6 +63,7 @@
 				D15C7960260A127C005509ED /* Main.storyboard */,
 				D15C7963260A127C005509ED /* Info.plist */,
 				D15C7964260A127C005509ED /* NLUTimer.entitlements */,
+				D106A76A26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav */,
 				D15C795D260A127C005509ED /* Preview Content */,
 			);
 			path = NLUTimer;
@@ -134,6 +137,7 @@
 				D15C7962260A127C005509ED /* Main.storyboard in Resources */,
 				D15C795F260A127C005509ED /* Preview Assets.xcassets in Resources */,
 				D15C795C260A127C005509ED /* Assets.xcassets in Resources */,
+				D106A76B26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
