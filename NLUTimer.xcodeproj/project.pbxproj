@@ -3,11 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		D106A76B26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav in Resources */ = {isa = PBXBuildFile; fileRef = D106A76A26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav */; };
+		D106A7792659EF85003CE667 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = D106A7782659EF85003CE667 /* KeyboardShortcuts */; };
 		D15C7958260A127B005509ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C7957260A127B005509ED /* AppDelegate.swift */; };
 		D15C795A260A127B005509ED /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C7959260A127B005509ED /* ContentView.swift */; };
 		D15C795C260A127C005509ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D15C795B260A127C005509ED /* Assets.xcassets */; };
@@ -32,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D106A7792659EF85003CE667 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +95,9 @@
 			dependencies = (
 			);
 			name = NLUTimer;
+			packageProductDependencies = (
+				D106A7782659EF85003CE667 /* KeyboardShortcuts */,
+			);
 			productName = NLUTimer;
 			productReference = D15C7954260A127B005509ED /* NLUTimer.app */;
 			productType = "com.apple.product-type.application";
@@ -120,6 +125,9 @@
 				Base,
 			);
 			mainGroup = D15C794B260A127B005509ED;
+			packageReferences = (
+				D106A7772659EF85003CE667 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+			);
 			productRefGroup = D15C7955260A127B005509ED /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -352,6 +360,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D106A7772659EF85003CE667 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D106A7782659EF85003CE667 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D106A7772659EF85003CE667 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D15C794C260A127B005509ED /* Project object */;
 }

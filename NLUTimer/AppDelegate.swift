@@ -8,6 +8,12 @@
 import Cocoa
 import SwiftUI
 import AVFoundation
+import KeyboardShortcuts
+
+extension KeyboardShortcuts.Name {
+    // Set global shortcut to Command+Option+k
+    static let togglePopover = Self("togglePopover", default: .init(.k, modifiers: [.option, .command]))
+}
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -28,7 +34,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let viewController = NSHostingController(rootView: contentView)
 
-        // Create the popover
+        // Create popover
         let popover = NSPopover()
         popover.contentSize = NSSize(width: AppDelegate.popoverWidth, height: AppDelegate.popoverHeight)
         popover.behavior = .transient
@@ -36,11 +42,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover.animates = false
         self.popover = popover
 
-        // Create the status item
+        // Create status item
         self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
         if let button = self.statusBarItem.button {
             button.image = NSImage(named: "Icon")
             button.action = #selector(togglePopover(_:))
+        }
+        
+        // Set shortcut action
+        KeyboardShortcuts.onKeyUp(for: .togglePopover) { [self] in
+            self.togglePopover(self)
         }
         
         // Pass object to let nlutimer take control
@@ -49,18 +60,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Show popover at start
         self.togglePopover(popover)
-
     }
     
     @objc func togglePopover(_ sender: AnyObject?) {
         if let button = self.statusBarItem.button {
             if self.popover.isShown {
                 self.popover.performClose(sender)
+                NSApplication.shared.hide(sender)
             } else {
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
                 self.popover.contentViewController?.view.window?.becomeKey()
                 self.nlutimer.audioPlayer.stop()
+                NSUserNotificationCenter.default.removeAllDeliveredNotifications()
             }
         }
     }
@@ -70,7 +82,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-class NLUTimer {
+class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
     var time = 0
     var timerRunning = false
     var soundPath = "mixkit-musical-alert-notification-2309"
@@ -81,7 +93,7 @@ class NLUTimer {
     var timer: Timer?
     var audioPlayer = AVAudioPlayer()
     
-    init() {
+    override init() {
         let bundle = Bundle.main
         guard let sound = bundle.path(forResource: self.soundPath, ofType: self.soundType) else { return }
         do {
@@ -93,6 +105,7 @@ class NLUTimer {
     }
     
     func onCommit(text: String) {
+        // Handle user input while enter is pressed in textfield
         print("User input: " + text)
         self.time = self.convert_time_string_to_seconds(time: text)
         self.setTimeToStatusBar()
@@ -116,16 +129,23 @@ class NLUTimer {
     }
     
     func convert_time_string_to_seconds(time: String) -> Int {
+        let time = String(time.filter { !" \n\t\r".contains($0) })
         let hours = self.splitTimeByKeyword(time: time, keyword: "h")
         let minutes = self.splitTimeByKeyword(time: time, keyword: "m")
         let seconds = self.splitTimeByKeyword(time: time, keyword: "s")
+        print("Hours = " + String(hours))
+        print("Minutes = " + String(minutes))
+        print("Seconds = " + String(seconds))
         return hours*3600 + minutes*60 + seconds
     }
     
     func splitTimeByKeyword(time: String, keyword: String) -> Int {
-        if time.contains(keyword) {
-            let targetString: String = time.components(separatedBy: keyword)[0].trimmingCharacters(in: .whitespacesAndNewlines)
-            return Int(targetString) ?? 0
+        let pattern = "[0-9]*" + keyword
+        let regex = try! NSRegularExpression(pattern: pattern)
+        let results = regex.matches(in: time, range: NSRange(time.startIndex..., in: time))
+        let retrieved = results.map {String(time[Range($0.range, in: time)!])}
+        if retrieved.count != 0 {
+            return Int(retrieved[0].dropLast()) ?? 0
         }
         return 0
     }
@@ -144,7 +164,7 @@ class NLUTimer {
     
     func update() {
         self.time -= 1
-        print("Remaining Time = " + String(self.time))
+        print("Remaining time = " + String(self.time) + " s")
         self.setTimeToStatusBar()
         if self.time == 0 {
             print("Time's up !!!!!")
@@ -163,10 +183,17 @@ class NLUTimer {
     func showNotification() {
         let notification = NSUserNotification()
         notification.title = "Time's Up !!!"
-        notification.informativeText = ""
+        notification.informativeText = "Click notification to dismiss"
         notification.soundName = NSUserNotificationDefaultSoundName
+        notification.hasActionButton = false
+        NSUserNotificationCenter.default.delegate = self
         NSUserNotificationCenter.default.deliver(notification)
-        // TODO: Stop music while notification is closed
+    }
+    
+    func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
+        print("Click notification")
+        self.audioPlayer.stop()
+        NSUserNotificationCenter.default.removeAllDeliveredNotifications()
     }
     
     func setTimeToStatusBar(){
@@ -216,10 +243,13 @@ class NLUTimer {
         if let button = self.statusBarItem.button {
             if self.popover.isShown {
                 self.popover.performClose(self.statusBarItem)
+                NSApplication.shared.hide(nil)
             } else {
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
                 self.popover.contentViewController?.view.window?.becomeKey()
+                self.audioPlayer.stop()
+                NSUserNotificationCenter.default.removeAllDeliveredNotifications()
             }
         }
     }
