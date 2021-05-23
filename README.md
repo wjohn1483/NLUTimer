@@ -10,7 +10,11 @@ Just download this timer from [here](https://github.com/wjohn1483/NLUTimer/relea
 
 After open this timer, it'll show up a textfield for typing. Just input the amount of time that you want to countdown.
 
+![Textfield](./images/input_textfield.png)
+
 To stop the music while time's up, click menu bar icon or click on the notification it sends.
+
+![Notification](./images/notification.png)
 
 There is a default shortcut `⌥⌘k` (Option+Command+k) to show/hide this timer.
 
