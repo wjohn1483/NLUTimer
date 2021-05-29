@@ -18,7 +18,7 @@ extension KeyboardShortcuts.Name {
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    static var popoverWidth = 200
+    static var popoverWidth = 240
     static var popoverHeight = 50
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
@@ -108,6 +108,7 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
         // Handle user input while enter is pressed in textfield
         print("User input: " + text)
         self.time = self.convert_time_string_to_seconds(time: text)
+        self.timer?.invalidate()
         self.setTimeToStatusBar()
         self.togglePopover()
         if self.time != 0 {

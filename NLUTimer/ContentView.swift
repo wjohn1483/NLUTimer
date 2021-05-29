@@ -11,12 +11,13 @@ struct ContentView: View {
     
     @State private var time = ""
     @State private var typing = false
+    @State private var playButtonWidth = CGFloat(100.0)
     @State private var buttonWidth = CGFloat(50.0)
     @State private var buttonHeight = CGFloat(50.0)
     var nlutimer: NLUTimer!
     
     var body: some View {
-        TextField("1h3m, 300s", text: $time, onEditingChanged: {
+        TextField("1h3m, 300s [Press Enter]", text: $time, onEditingChanged: {
             self.typing = $0
         }, onCommit: {
             self.nlutimer.onCommit(text: self.time)
@@ -29,25 +30,29 @@ struct ContentView: View {
             Button(action: {
                 self.nlutimer.toggleTimer()
             }) {
-                Image("Play")
-                    .renderingMode(.template)
+//                Image("Play")
+//                    .renderingMode(/*@START_MENU_TOKEN@*/.template/*@END_MENU_TOKEN@*/)
+                Text("Pause/Resume")
             }
-            .frame(maxWidth: buttonWidth, maxHeight: buttonHeight, alignment: .bottomLeading)
+            .frame(maxWidth: playButtonWidth, maxHeight: buttonHeight, alignment: .bottomLeading)
         
             Button(action: {
                 self.nlutimer.stopTimer()
             }) {
-                Image("Stop")
-                    .renderingMode(.template)
+//                Image("Stop")
+//                    .renderingMode(.template)
+                Text("Stop")
             }
             .frame(maxWidth: buttonWidth, maxHeight: buttonHeight, alignment: .bottom)
         
             Button(action: {
                 quitProgram()
             }) {
-                Image("Quit")
-                    .renderingMode(.template)
+//                Image("Quit")
+//                    .renderingMode(.template)
+                Text("Quit")
             }
+            .colorInvert()
             .frame(maxWidth: buttonWidth, maxHeight: buttonHeight, alignment: .bottomTrailing)
         }
     }
