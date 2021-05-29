@@ -8,9 +8,15 @@ Just download this timer from [here](https://github.com/wjohn1483/NLUTimer/relea
 
 ## How to Use
 
-After open this timer, it'll show up a textfield for typing. Just input the amount of time that you want to countdown.
+After open up this timer, it'll show a textfield for typing. Just input the amount of time that you want to countdown and press `Enter`.
 
 ![Textfield](./images/input_textfield.png)
+
+Click `Pause/Resume` to pause or resume the timer, click `Stop` to cancel the timer, and click `Quit` to quit this program.
+
+Timer will show remaining time in menu bar.
+
+![Running](./images/running.png)
 
 To stop the music while time's up, click menu bar icon or click on the notification it sends.
 
