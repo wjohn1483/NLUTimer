@@ -4,7 +4,7 @@ This is a Mac OSX app that shows timer in the menu bar. This timer accepts input
 
 ## How to Install
 
-Just download this timer from [here](https://github.com/wjohn1483/NLUTimer/releases/download/v1.0/NLUTimer.app.zip), unzip it, and double-click it.
+Download this timer from [here](https://github.com/wjohn1483/NLUTimer/releases/download/v1.0/NLUTimer.app.zip), unzip it, right-click on `.app` file, and open it.
 
 ## How to Use
 
