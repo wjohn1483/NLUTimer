@@ -84,31 +84,42 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
     var time = 0
+    var userInputTime = 0
     var timerRunning = false
-    var soundPath = "mixkit-musical-alert-notification-2309"
+    var timerLoop = false
+    var soundIndex = 0
+    var soundPath = ["mixkit - Cool guitar riff", "mixkit - Happy guitar chords", "mixkit - Musical alert notification", "mixkit - Flute mobile phone notification alert", "mixkit - Video game win"]
     var soundType = "wav"
-    var audioPlayDefaultCount = 5 // Will play music 6 times
+    var audioPlayDefaultCount = [5, 5, 5, 3, 3] // Will play music 6 times if number set to 5
     var statusBarItem: NSStatusItem!
     var popover: NSPopover!
     var timer: Timer?
     var audioPlayer = AVAudioPlayer()
+    var buttonText: Text!
     
     override init() {
+        super.init()
+        self.setAudioPlayer(index: self.soundIndex)
+    }
+    
+    func setAudioPlayer(index: Int) {
         let bundle = Bundle.main
-        guard let sound = bundle.path(forResource: self.soundPath, ofType: self.soundType) else { return }
+        guard let sound = bundle.path(forResource: self.soundPath[index], ofType: self.soundType) else { return }
         do {
             print("Found sound file")
             self.audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: sound))
         } catch {
             print("Sound file not found")
         }
+        self.soundIndex = index
     }
     
     func onCommit(text: String) {
         // Handle user input while enter is pressed in textfield
         print("User input: " + text)
         self.time = self.convert_time_string_to_seconds(time: text)
-        self.timer?.invalidate()
+        self.userInputTime = self.time
+        self.invalidateTimer()
         self.setTimeToStatusBar()
         self.togglePopover()
         if self.time != 0 {
@@ -172,11 +183,16 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
             self.invalidateTimer()
             self.showNotification()
             self.playMusic()
+            if self.timerLoop {
+                self.time = self.userInputTime
+                self.setTimeToStatusBar()
+                self.createTimer()
+            }
         }
     }
     
     func playMusic() {
-        self.audioPlayer.numberOfLoops = self.audioPlayDefaultCount
+        self.audioPlayer.numberOfLoops = self.audioPlayDefaultCount[self.soundIndex]
         self.audioPlayer.currentTime = 0
         self.audioPlayer.play()
     }
@@ -212,8 +228,8 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
         }
     }
     
-    func toggleTimer() {
-        if self.timerRunning == true {
+    func toggleTimer() -> Bool {
+        if self.timerRunning {
             print("Pause")
             self.invalidateTimer()
         }
@@ -223,6 +239,7 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
                 self.createTimer()
             }
         }
+        return self.timerRunning
     }
     
     func stopTimer() {
@@ -230,6 +247,13 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
         self.invalidateTimer()
         self.time = 0
         self.setTimeToStatusBar()
+    }
+    
+    func toggleLoop() -> Bool {
+        print("Toggle Loop")
+        self.timerLoop.toggle()
+        print("Loop =", self.timerLoop)
+        return self.timerLoop
     }
     
     func setStatusBarItem(statusBarItem: NSStatusItem){
@@ -254,4 +278,5 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
             }
         }
     }
+    
 }

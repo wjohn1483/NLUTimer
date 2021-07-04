@@ -6,13 +6,17 @@ This is a Mac OSX app that shows timer in the menu bar. This timer accepts input
 
 Download this timer from [here](https://github.com/wjohn1483/NLUTimer/releases/download/v1.0/NLUTimer.app.zip), unzip it, right-click on `.app` file, and open it.
 
+**Note**: Your macOS need to be >= OSX 11.0 to have menu for choosing music.
+
 ## How to Use
 
 After open up this timer, it'll show a textfield for typing. Just input the amount of time that you want to countdown and press `Enter`.
 
 ![Textfield](./images/input_textfield.png)
 
-Click `Pause/Resume` to pause or resume the timer, click `Stop` to cancel the timer, and click `Quit` to quit this program.
+Click `Pause/Resume` to pause or resume the timer, click `Stop` to cancel the timer, click `Loop` to set a same timer while time's up, and click `Quit` to quit this program.
+
+You can choose which music to play while time's up by clicking `Choose music...` and selecting a music in menu below.
 
 Timer will show remaining time in menu bar.
 

@@ -7,17 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D106A76B26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav in Resources */ = {isa = PBXBuildFile; fileRef = D106A76A26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav */; };
 		D106A7792659EF85003CE667 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = D106A7782659EF85003CE667 /* KeyboardShortcuts */; };
 		D15C7958260A127B005509ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C7957260A127B005509ED /* AppDelegate.swift */; };
 		D15C795A260A127B005509ED /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C7959260A127B005509ED /* ContentView.swift */; };
 		D15C795C260A127C005509ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D15C795B260A127C005509ED /* Assets.xcassets */; };
 		D15C795F260A127C005509ED /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D15C795E260A127C005509ED /* Preview Assets.xcassets */; };
 		D15C7962260A127C005509ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D15C7960260A127C005509ED /* Main.storyboard */; };
+		D196E683269198B9005EBA0E /* mixkit - Cool guitar riff.wav in Resources */ = {isa = PBXBuildFile; fileRef = D196E682269198B9005EBA0E /* mixkit - Cool guitar riff.wav */; };
+		D196E686269198D6005EBA0E /* mixkit - Musical alert notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = D196E685269198D6005EBA0E /* mixkit - Musical alert notification.wav */; };
+		D196E6892691A53E005EBA0E /* mixkit - Flute mobile phone notification alert.wav in Resources */ = {isa = PBXBuildFile; fileRef = D196E6882691A53E005EBA0E /* mixkit - Flute mobile phone notification alert.wav */; };
+		D196E68C2691A8A7005EBA0E /* mixkit - Happy guitar chords.wav in Resources */ = {isa = PBXBuildFile; fileRef = D196E68B2691A8A7005EBA0E /* mixkit - Happy guitar chords.wav */; };
+		D196E68F2691AAF4005EBA0E /* mixkit - Video game win.wav in Resources */ = {isa = PBXBuildFile; fileRef = D196E68E2691AAF4005EBA0E /* mixkit - Video game win.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		D106A76A26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "mixkit-musical-alert-notification-2309.wav"; sourceTree = "<group>"; };
 		D15C7954260A127B005509ED /* NLUTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NLUTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D15C7957260A127B005509ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D15C7959260A127B005509ED /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -26,6 +29,11 @@
 		D15C7961260A127C005509ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D15C7963260A127C005509ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D15C7964260A127C005509ED /* NLUTimer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NLUTimer.entitlements; sourceTree = "<group>"; };
+		D196E682269198B9005EBA0E /* mixkit - Cool guitar riff.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "mixkit - Cool guitar riff.wav"; sourceTree = "<group>"; };
+		D196E685269198D6005EBA0E /* mixkit - Musical alert notification.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "mixkit - Musical alert notification.wav"; sourceTree = "<group>"; };
+		D196E6882691A53E005EBA0E /* mixkit - Flute mobile phone notification alert.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "mixkit - Flute mobile phone notification alert.wav"; sourceTree = "<group>"; };
+		D196E68B2691A8A7005EBA0E /* mixkit - Happy guitar chords.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "mixkit - Happy guitar chords.wav"; sourceTree = "<group>"; };
+		D196E68E2691AAF4005EBA0E /* mixkit - Video game win.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "mixkit - Video game win.wav"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +73,11 @@
 				D15C7960260A127C005509ED /* Main.storyboard */,
 				D15C7963260A127C005509ED /* Info.plist */,
 				D15C7964260A127C005509ED /* NLUTimer.entitlements */,
-				D106A76A26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav */,
+				D196E682269198B9005EBA0E /* mixkit - Cool guitar riff.wav */,
+				D196E685269198D6005EBA0E /* mixkit - Musical alert notification.wav */,
+				D196E6882691A53E005EBA0E /* mixkit - Flute mobile phone notification alert.wav */,
+				D196E68B2691A8A7005EBA0E /* mixkit - Happy guitar chords.wav */,
+				D196E68E2691AAF4005EBA0E /* mixkit - Video game win.wav */,
 				D15C795D260A127C005509ED /* Preview Content */,
 			);
 			path = NLUTimer;
@@ -142,10 +154,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D196E683269198B9005EBA0E /* mixkit - Cool guitar riff.wav in Resources */,
+				D196E68F2691AAF4005EBA0E /* mixkit - Video game win.wav in Resources */,
 				D15C7962260A127C005509ED /* Main.storyboard in Resources */,
+				D196E68C2691A8A7005EBA0E /* mixkit - Happy guitar chords.wav in Resources */,
+				D196E6892691A53E005EBA0E /* mixkit - Flute mobile phone notification alert.wav in Resources */,
 				D15C795F260A127C005509ED /* Preview Assets.xcassets in Resources */,
+				D196E686269198D6005EBA0E /* mixkit - Musical alert notification.wav in Resources */,
 				D15C795C260A127C005509ED /* Assets.xcassets in Resources */,
-				D106A76B26590A1B003CE667 /* mixkit-musical-alert-notification-2309.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
