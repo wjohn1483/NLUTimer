@@ -18,7 +18,7 @@ extension KeyboardShortcuts.Name {
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    static var popoverWidth = 240
+    static var popoverWidth = 280
     static var popoverHeight = 50
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
@@ -59,7 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.nlutimer.setPopover(popover: self.popover)
         
         // Show popover at start
-        self.togglePopover(popover)
+        self.togglePopover(nil)
     }
     
     @objc func togglePopover(_ sender: AnyObject?) {
@@ -119,12 +119,23 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
         print("User input: " + text)
         self.time = self.convert_time_string_to_seconds(time: text)
         self.userInputTime = self.time
+        
+        // Not sure why calling setTimeToStatusBar() here causes onCommit() to be triggered twice
+        // Use another timer to update time as a workaround
+        // self.setTimeToStatusBar()
+        self.updateStatusBarOnCommit()
+        
         self.invalidateTimer()
-        self.setTimeToStatusBar()
         self.togglePopover()
         if self.time != 0 {
             self.createTimer()
         }
+    }
+    
+    func updateStatusBarOnCommit() {
+        Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false, block: { timer in
+            self.setTimeToStatusBar()
+        })
     }
     
     func createTimer() {
@@ -264,11 +275,34 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
         self.popover = popover
     }
     
+    func simulateToggleShortcut() {
+        let src = CGEventSource(stateID: CGEventSourceStateID.hidSystemState)
+        let commandDown = CGEvent(keyboardEventSource: src, virtualKey: 0x38, keyDown: true)
+        let commandUp = CGEvent(keyboardEventSource: src, virtualKey: 0x38, keyDown: false)
+        let optionDown = CGEvent(keyboardEventSource: src, virtualKey: 0x3A, keyDown: true)
+        let optionUp = CGEvent(keyboardEventSource: src, virtualKey: 0x3A, keyDown: false)
+        let kDown = CGEvent(keyboardEventSource: src, virtualKey: 0x28, keyDown: true)
+        let kUp = CGEvent(keyboardEventSource: src, virtualKey: 0x28, keyDown: false)
+
+        commandDown?.flags = CGEventFlags.maskCommand;
+        optionDown?.flags = CGEventFlags.maskCommand;
+
+        let loc = CGEventTapLocation.cghidEventTap
+
+        commandDown?.post(tap: loc)
+        optionDown?.post(tap: loc)
+        kDown?.post(tap: loc)
+        kUp?.post(tap: loc)
+        optionUp?.post(tap: loc)
+        commandUp?.post(tap: loc)
+        print("Simulate command+option+k")
+    }
+    
     func togglePopover() {
         if let button = self.statusBarItem.button {
             if self.popover.isShown {
-                self.popover.performClose(self.statusBarItem)
-                NSApplication.shared.hide(nil)
+                 self.popover.performClose(self.statusBarItem)
+                 NSApplication.shared.hide(nil)
             } else {
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)

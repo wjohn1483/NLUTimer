@@ -5,9 +5,9 @@
         "package": "KeyboardShortcuts",
         "repositoryURL": "https://github.com/sindresorhus/KeyboardShortcuts",
         "state": {
-          "branch": null,
-          "revision": "01f89033f8492c2ee581720e2d391dec6b279b85",
-          "version": "1.1.0"
+          "branch": "main",
+          "revision": "3017db0d96ccc7f5306037826d6eaaa4e3683cf3",
+          "version": null
         }
       }
     ]

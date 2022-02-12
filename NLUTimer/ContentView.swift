@@ -11,7 +11,7 @@ struct ContentView: View {
     
     @State private var time = ""
     @State private var typing = false
-    @State private var playButtonWidth = CGFloat(100.0)
+    @State private var playButtonWidth = CGFloat(120.0)
     @State private var buttonWidth = CGFloat(50.0)
     @State private var buttonHeight = CGFloat(50.0)
     @State private var timerRunning = false
@@ -51,6 +51,7 @@ struct ContentView: View {
                 timerRunning = self.nlutimer.toggleTimer()
             }) {
                 Text("Pause/Resume")
+//                Text("⏯︎")
             }
             .frame(maxWidth: playButtonWidth, maxHeight: buttonHeight, alignment: .bottomLeading)
             
