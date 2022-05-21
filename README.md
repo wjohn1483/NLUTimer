@@ -4,7 +4,7 @@ This is a Mac OSX app that shows timer in the menu bar. This timer accepts input
 
 ## How to Install
 
-Download this timer from [here](https://github.com/wjohn1483/NLUTimer/releases/download/1.1/NLUTimer.app.zip), unzip it, right-click on `.app` file, and open it.
+Download this timer from [here](https://github.com/wjohn1483/NLUTimer/releases), unzip it, right-click on `.app` file, and open it.
 
 **Note**: Your macOS need to be >= OSX 11.0 to have menu for choosing music.
 
@@ -31,4 +31,3 @@ There is a default shortcut `⌥⌘k` (Option+Command+k) to show/hide this timer
 ## Thanks
 
 This app was heavily inspired by [Horo](https://apps.apple.com/us/app/horo-timer-for-menu-bar/id1437226581?mt=12). It is recommended to download it for better experience.
-
