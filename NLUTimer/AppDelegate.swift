@@ -19,7 +19,7 @@ extension KeyboardShortcuts.Name {
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     static var popoverWidth = 280
-    static var popoverHeight = 50
+    static var popoverHeight = 130
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
     var contentView: ContentView!
@@ -67,12 +67,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if self.popover.isShown {
                 self.popover.performClose(sender)
                 NSApplication.shared.hide(sender)
+                self.nlutimer.timeTextTimer?.invalidate()
             } else {
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
                 self.popover.contentViewController?.view.window?.becomeKey()
                 self.nlutimer.audioPlayer.stop()
                 NSUserNotificationCenter.default.removeAllDeliveredNotifications()
+                self.nlutimer.updateTimeText()
+                self.nlutimer.timeTextTimer?.invalidate()
+                self.nlutimer.timeTextTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
+                    self.nlutimer.updateTimeText()
+                })
             }
         }
     }
@@ -82,7 +88,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
+class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
     var time = 0
     var userInputTime = 0
     var timerRunning = false
@@ -90,12 +96,13 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
     var soundIndex = 0
     var soundPath = ["mixkit - Cool guitar riff", "mixkit - Happy guitar chords", "mixkit - Musical alert notification", "mixkit - Flute mobile phone notification alert", "mixkit - Video game win"]
     var soundType = "wav"
-    var audioPlayDefaultCount = [5, 5, 5, 3, 3] // Will play music 6 times if number set to 5
+    var audioPlayDefaultCount = [5, 5, 5, 3, 3] // Will play music 6 times if number is set to 5
     var statusBarItem: NSStatusItem!
     var popover: NSPopover!
     var timer: Timer?
     var audioPlayer = AVAudioPlayer()
-    var buttonText: Text!
+    var timeTextTimer: Timer?
+    @Published var timeText: String = ""
     
     override init() {
         super.init()
@@ -237,6 +244,7 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
                 button.title = self.convert_seconds_to_string()
             }
         }
+        self.updateTimeText()
     }
     
     func toggleTimer() -> Bool {
@@ -301,16 +309,34 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate {
     func togglePopover() {
         if let button = self.statusBarItem.button {
             if self.popover.isShown {
-                 self.popover.performClose(self.statusBarItem)
-                 NSApplication.shared.hide(nil)
+                self.popover.performClose(self.statusBarItem)
+                NSApplication.shared.hide(nil)
+                self.timeTextTimer?.invalidate()
             } else {
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
                 self.popover.contentViewController?.view.window?.becomeKey()
                 self.audioPlayer.stop()
                 NSUserNotificationCenter.default.removeAllDeliveredNotifications()
+                self.updateTimeText()
+                self.timeTextTimer?.invalidate()
+                self.timeTextTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { timer in
+                    self.updateTimeText()
+                })
             }
         }
     }
     
+    func getCurrentTime() -> String{
+        let today = Date()
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: today)
+        let minute = calendar.component(.minute, from: today)
+        let second = calendar.component(.second, from: today)
+        return String(format: "%02d", hour) + ":" + String(format: "%02d", minute) + ":" + String(format: "%02d", second)
+    }
+    
+    func updateTimeText() {
+        self.timeText = "🕒" + self.getCurrentTime() + "  ⏰" + self.convert_seconds_to_string()
+    }
 }

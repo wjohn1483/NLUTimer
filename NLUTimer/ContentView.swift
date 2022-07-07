@@ -16,9 +16,13 @@ struct ContentView: View {
     @State private var buttonHeight = CGFloat(50.0)
     @State private var timerRunning = false
     @State private var timerLoop = false
-    var nlutimer: NLUTimer!
+    @ObservedObject var nlutimer: NLUTimer
     
     var body: some View {
+        Text("")
+        Text(self.nlutimer.timeText)
+            .bold()
+            .font(Font.custom("Arial", size: 20))
         TextField("1h3m, 300s [Press Enter]", text: $time, onEditingChanged: {
             self.typing = $0
         }, onCommit: {
