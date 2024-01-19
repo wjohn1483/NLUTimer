@@ -93,7 +93,7 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
     var userInputTime = 0
     var timerRunning = false
     var timerLoop = false
-    var soundIndex = 0
+    var soundIndex = 3
     var soundPath = ["mixkit - Cool guitar riff", "mixkit - Happy guitar chords", "mixkit - Musical alert notification", "mixkit - Flute mobile phone notification alert", "mixkit - Video game win"]
     var soundType = "wav"
     var audioPlayDefaultCount = [5, 5, 5, 3, 3] // Will play music 6 times if number is set to 5
