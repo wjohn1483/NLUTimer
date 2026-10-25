@@ -1,8 +1,14 @@
 {
   "images" : [
     {
-      "filename" : "iconfinder_icon-ios7-timer-outline_211833.png",
-      "idiom" : "mac"
+      "filename" : "icon.png",
+      "idiom" : "mac",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "icon@2x.png",
+      "idiom" : "mac",
+      "scale" : "2x"
     }
   ],
   "info" : {

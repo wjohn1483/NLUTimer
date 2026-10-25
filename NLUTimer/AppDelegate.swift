@@ -8,6 +8,7 @@
 import Cocoa
 import SwiftUI
 import AVFoundation
+import UserNotifications
 import KeyboardShortcuts
 
 extension KeyboardShortcuts.Name {
@@ -21,6 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     static var popoverWidth = 280
     static var popoverHeight = 130
     var popover: NSPopover!
+    var panel: HotkeyPanel!
     var statusBarItem: NSStatusItem!
     var contentView: ContentView!
     var nlutimer = NLUTimer()
@@ -32,15 +34,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let contentView = ContentView(nlutimer: self.nlutimer)
         self.contentView = contentView
         
-        let viewController = NSHostingController(rootView: contentView)
+        let viewController = NSHostingController(rootView: contentView.frame(width: CGFloat(AppDelegate.popoverWidth)))
 
-        // Create popover
+        // Create popover, sized to fit the content so the bottom isn't cut off
         let popover = NSPopover()
-        popover.contentSize = NSSize(width: AppDelegate.popoverWidth, height: AppDelegate.popoverHeight)
+        popover.contentSize = viewController.view.fittingSize
         popover.behavior = .transient
         popover.contentViewController = viewController
         popover.animates = false
         self.popover = popover
+
+        // Create panel for the hotkey. A popover anchored to the status item closes at once
+        // in full-screen apps because the menu bar is hidden, so use a floating panel instead.
+        let panel = HotkeyPanel(contentRect: NSRect(x: 0, y: 0, width: AppDelegate.popoverWidth, height: AppDelegate.popoverHeight),
+                                styleMask: [.nonactivatingPanel, .borderless], backing: .buffered, defer: true)
+        // Fix the width so the hosting controller doesn't shrink the panel; height fits the content
+        panel.contentViewController = NSHostingController(rootView: ContentView(nlutimer: self.nlutimer)
+            .frame(width: CGFloat(AppDelegate.popoverWidth)))
+        panel.setContentSize(panel.contentViewController!.view.fittingSize)
+        panel.level = .floating
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        panel.hidesOnDeactivate = false
+        panel.isReleasedWhenClosed = false
+        panel.delegate = self.nlutimer
+        self.panel = panel
 
         // Create status item
         self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
@@ -51,12 +68,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Set shortcut action
         KeyboardShortcuts.onKeyUp(for: .togglePopover) { [self] in
-            self.togglePopover(self)
+            if self.popover.isShown {
+                self.togglePopover(self)
+            } else {
+                self.nlutimer.togglePanel()
+            }
         }
-        
+
         // Pass object to let nlutimer take control
         self.nlutimer.setStatusBarItem(statusBarItem: self.statusBarItem)
         self.nlutimer.setPopover(popover: self.popover)
+        self.nlutimer.setPanel(panel: self.panel)
         
         // Show popover at start
         self.togglePopover(nil)
@@ -73,7 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
                 self.popover.contentViewController?.view.window?.becomeKey()
                 self.nlutimer.audioPlayer.stop()
-                NSUserNotificationCenter.default.removeAllDeliveredNotifications()
+                UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                 self.nlutimer.updateTimeText()
                 self.nlutimer.timeTextTimer?.invalidate()
                 self.nlutimer.timeTextTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
@@ -88,7 +110,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
+class HotkeyPanel: NSPanel {
+    // Borderless panels can't become key by default, which would block typing in the textfield
+    override var canBecomeKey: Bool { true }
+}
+
+class NLUTimer: NSObject, UNUserNotificationCenterDelegate, NSWindowDelegate, ObservableObject {
     var time = 0
     var userInputTime = 0
     var timerRunning = false
@@ -99,6 +126,7 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
     var audioPlayDefaultCount = [5, 5, 5, 3, 3] // Will play music 6 times if number is set to 5
     var statusBarItem: NSStatusItem!
     var popover: NSPopover!
+    var panel: NSPanel!
     var timer: Timer?
     var audioPlayer = AVAudioPlayer()
     var timeTextTimer: Timer?
@@ -107,6 +135,9 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
     override init() {
         super.init()
         self.setAudioPlayer(index: self.soundIndex)
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            print("Notification permission granted =", granted)
+        }
     }
     
     func setAudioPlayer(index: Int) {
@@ -216,19 +247,25 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
     }
     
     func showNotification() {
-        let notification = NSUserNotification()
-        notification.title = "Time's Up !!!"
-        notification.informativeText = "Click notification to dismiss"
-        notification.soundName = NSUserNotificationDefaultSoundName
-        notification.hasActionButton = false
-        NSUserNotificationCenter.default.delegate = self
-        NSUserNotificationCenter.default.deliver(notification)
+        let content = UNMutableNotificationContent()
+        content.title = "Time's Up !!!"
+        content.body = "Click notification to dismiss"
+        content.sound = .default
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().add(request)
     }
-    
-    func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         print("Click notification")
         self.audioPlayer.stop()
-        NSUserNotificationCenter.default.removeAllDeliveredNotifications()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        completionHandler()
+    }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Show the banner even when the app is active (e.g. popover is open)
+        completionHandler([.banner, .sound])
     }
     
     func setTimeToStatusBar(){
@@ -282,6 +319,40 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
     func setPopover(popover: NSPopover){
         self.popover = popover
     }
+
+    func setPanel(panel: NSPanel){
+        self.panel = panel
+    }
+
+    func togglePanel() {
+        if self.panel.isVisible {
+            self.closePanel()
+        } else {
+            // Place at the top-right corner of the screen, near the status item
+            if let frame = NSScreen.main?.visibleFrame {
+                self.panel.setFrameTopLeftPoint(NSPoint(x: frame.maxX - self.panel.frame.width - 10, y: frame.maxY - 10))
+            }
+            // Non-activating panel takes keyboard input without switching away from the full-screen app
+            self.panel.makeKeyAndOrderFront(nil)
+            self.audioPlayer.stop()
+            UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+            self.updateTimeText()
+            self.timeTextTimer?.invalidate()
+            self.timeTextTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { timer in
+                self.updateTimeText()
+            })
+        }
+    }
+
+    func closePanel() {
+        self.panel.orderOut(nil)
+        self.timeTextTimer?.invalidate()
+    }
+
+    func windowDidResignKey(_ notification: Notification) {
+        // Close the panel when clicking outside, like a transient popover
+        self.closePanel()
+    }
     
     func simulateToggleShortcut() {
         let src = CGEventSource(stateID: CGEventSourceStateID.hidSystemState)
@@ -307,6 +378,10 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
     }
     
     func togglePopover() {
+        if self.panel.isVisible {
+            self.closePanel()
+            return
+        }
         if let button = self.statusBarItem.button {
             if self.popover.isShown {
                 self.popover.performClose(self.statusBarItem)
@@ -317,7 +392,7 @@ class NLUTimer: NSObject, NSUserNotificationCenterDelegate, ObservableObject {
                 self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
                 self.popover.contentViewController?.view.window?.becomeKey()
                 self.audioPlayer.stop()
-                NSUserNotificationCenter.default.removeAllDeliveredNotifications()
+                UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                 self.updateTimeText()
                 self.timeTextTimer?.invalidate()
                 self.timeTextTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { timer in

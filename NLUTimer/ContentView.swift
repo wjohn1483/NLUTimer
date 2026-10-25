@@ -23,11 +23,14 @@ struct ContentView: View {
         Text(self.nlutimer.timeText)
             .bold()
             .font(Font.custom("Arial", size: 20))
+        // Use onSubmit instead of onCommit: on macOS onCommit also fires when the field loses focus,
+        // which restarted the timer with the old text when the popover was closed
         TextField("1h3m, 300s [Press Enter]", text: $time, onEditingChanged: {
             self.typing = $0
-        }, onCommit: {
-            self.nlutimer.onCommit(text: self.time)
         })
+            .onSubmit {
+                self.nlutimer.onCommit(text: self.time)
+            }
             .font(Font.custom("Arial", size: 20))
             .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.blue, lineWidth: 1))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -97,7 +100,7 @@ struct ContentView: View {
         }
         if #available(OSX 11.0, *) {
             Menu("Choose music...") {
-                ForEach(0..<self.nlutimer.soundPath.count) { index in
+                ForEach(self.nlutimer.soundPath.indices, id: \.self) { index in
                     Button(action: {
                         print("Select music ", index)
                         self.nlutimer.setAudioPlayer(index: index)
@@ -106,6 +109,8 @@ struct ContentView: View {
                     }
                 }
             }
+            // Leave room below so the menu's border isn't clipped by the window edge
+            .padding(.bottom, 8)
         } else {
             // Fallback on earlier versions
         }
